@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/* Paleta FastPay: amarillo de la tarjeta, negro profundo y el "papel" cálido de la hoja inferior. */
+:root {
+  --yellow: #f6cd2b;
+  --yellow-deep: #e9bd12;
+  --ink: #0e0e0e;
+  --ink-2: #1a1a1a;
+  --ink-3: #2a2a2a;
+  --paper: #edebe5;
+  --paper-2: #e2dfd7;
+  --white: #ffffff;
+  --muted: #85837c;
+  --success: #3aa35b;
+  --success-soft: #e2f0e3;
+  --warn: #e98f3c;
+  --warn-soft: #fbeadb;
+  --danger: #d14343;
+}
+
+@theme inline {
+  --color-yellow: var(--yellow);
+  --color-yellow-deep: var(--yellow-deep);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-muted: var(--muted);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-outfit);
+  --font-mono: var(--font-mono);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-outfit), system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--yellow);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--yellow-deep);
+  outline-offset: 2px;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
+}

@@ -1,0 +1,67 @@
+# Yellow Wallet 2FA — Prefect Server + Backend FastAPI + Web Next.js (BFF).
+# La base de datos es Supabase (remota) y la app móvil corre en el iPhone con Expo Go.
+#
+#   docker compose --profile setup run --rm setup   # una vez: migraciones + usuario demo
+#   docker compose up --build
+#
+#   Web:      http://localhost:3000
+#   API:      http://localhost:8000/docs
+#   Prefect:  http://localhost:4200
+name: yellow-wallet-2fa
+
+services:
+  prefect:
+    image: prefecthq/prefect:3-latest
+    command: prefect server start --host 0.0.0.0 --port 4200
+    environment:
+      # La UI corre en tu navegador: debe llamar a la API por localhost, no por el nombre del servicio.
+      PREFECT_UI_API_URL: http://localhost:4200/api
+      PREFECT_SERVER_ANALYTICS_ENABLED: "false"
+    ports:
+      - "4200:4200"
+    volumes:
+      - prefect-data:/root/.prefect
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4200/api/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  backend:
+    build: ./backend-prefect
+    env_file: ./backend-prefect/.env
+    environment:
+      # Dentro de la red de Docker, el servidor de Prefect se llama "prefect".
+      PREFECT_API_URL: http://prefect:4200/api
+    ports:
+      - "8000:8000"
+    depends_on:
+      prefect:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  web:
+    build: ./web-app
+    environment:
+      BACKEND_URL: http://backend:8000
+      # Laboratorio en http://localhost: las cookies httpOnly van sin el flag Secure.
+      INSECURE_COOKIES: "1"
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # Tarea puntual: crea el schema mfa_lab en Supabase y el usuario demo.
+  setup:
+    build: ./backend-prefect
+    env_file: ./backend-prefect/.env
+    command: sh -c "python -m scripts.migrate && python -m scripts.seed_demo"
+    profiles: ["setup"]
+
+volumes:
+  prefect-data:

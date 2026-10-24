@@ -1,0 +1,33 @@
+# Imágenes de referencia de diseño (FastPay, Behance): solo uso local, no se versionan
+design-ref/
+
+# Secretos
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node / Expo / Next
+node_modules/
+.expo/
+.next/
+dist/
+web-build/
+*.tsbuildinfo
+next-env.d.ts
+
+# SO / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Archivos de agentes generados por las plantillas (create-expo-app / next dev)
+AGENTS.md
+CLAUDE.md
+.claude/
